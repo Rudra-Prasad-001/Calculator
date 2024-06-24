@@ -15,7 +15,7 @@ let currentInput = '';
 let previousInput = '';
 let operation = null ;
 
-buttons_container.addEventListener('click' , (e) => {
+buttonsContainer.addEventListener('click' , (e) => {
     switch(e.target.className) {
         case 'AC' :
             clearDisplay() ;
@@ -30,15 +30,50 @@ buttons_container.addEventListener('click' , (e) => {
             calculateResult();
             break;
         
-        default : if(operator.contains(e.target.className)){
+        default : if(operator.includes(e.target.className)){
             return setOperator(e.target.textContent);
         }
-                  else if(number.contains(e.target.className)) {
+                  else if(number.includes(e.target.className)) {
                     return appendNumber(e.target.textContent);
                   }
 
     }
+    updateDisplay();
 });
+
+function updateDisplay() {
+    display.textContent = currentInput;
+};
+
+
+function clearDisplay() {
+    currentInput = '' ;
+    previousInput = '' ;
+    operation = null ;
+};
+
+function toggleSign() {
+    if(currentInput) {
+        currentInput = parseFloat((currentInput) * (-1)).toString();
+    }
+};
+
+function convertToPercentage() {
+    if(currentInput) {
+        currentInput = parseFloat((currentInput) / 100).toString();
+    }
+};
+
+function appendNumber(num) {
+    if(num === '.' && currentInput.includes('.')) return display.textContent = 'NaN';
+
+    else {
+        currentInput += num ;
+    }
+
+};
+
+
 
 
 
