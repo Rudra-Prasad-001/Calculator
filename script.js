@@ -1,79 +1,117 @@
+document.addEventListener('DOMContentLoaded' , () => {
+    const display = document.querySelector('#display');
 
-const display = document.querySelector('#display');
+    const buttonsContainer = document.querySelector('.buttons-container');
 
-const buttonsContainer = document.querySelector('.buttons-container');
+    const operators = document.querySelectorAll('.operator') ;   //Node list
 
-const operators = document.querySelectorAll('.operator') ;   //Node list
+    const numbers = document.querySelectorAll('.number');  //Node list
 
-const numbers = document.querySelectorAll('.number');  //Node list
+    const number = [...numbers] ;  //Converted Node list to array
 
-const number = [...numbers] ;  //Converted Node list to array
+    const operator = [...operators] ;  // Converted Node list to array
 
-const operator = [...operators] ;  // Converted Node list to array
+    let currentInput = '';
+    let previousInput = '';
+    let operation = null ;
 
-let currentInput = '';
-let previousInput = '';
-let operation = null ;
-
-buttonsContainer.addEventListener('click' , (e) => {
-    switch(e.target.className) {
-        case 'AC' :
-            clearDisplay() ;
-            break;
-        case 'plus-or-minus' :
-            toggleSign();
-            break;
-        case 'percentage' :
-            convertToPercentage() ;
-            break ;
-        case 'equal' :
-            calculateResult();
-            break;
+    buttonsContainer.addEventListener('click' , (e) => {
+        const target = e.target ;
+        const classList = target.classList;
         
-        default : if(operator.includes(e.target.className)){
-            return setOperator(e.target.textContent);
+        
+        switch(true) {
+            case classList.contains('AC') :
+                clearDisplay() ;
+                break;
+            case classList.contains('plus-or-minus') :
+                toggleSign();
+                break;
+            case classList.contains('equal') :
+                calculateResult();
+                break;
+            
+            default : if(operator.includes(target)){
+                      setOperation(target.textContent);
+            }
+                    else if(number.includes(target)) {
+                      appendNumber(target.textContent);
+                    }
+
+        } 
+        
+        updateDisplay();
+        
+    });
+
+    function updateDisplay() {
+        
+        display.textContent = `${currentInput}`;
+    };
+
+
+    function clearDisplay() {
+        currentInput = '' ;
+        previousInput = '' ;
+        operation = null ;
+    };
+
+    function toggleSign() {
+        if(currentInput) {
+            currentInput = parseFloat((currentInput) * (-1)).toString();
         }
-                  else if(number.includes(e.target.className)) {
-                    return appendNumber(e.target.textContent);
-                  }
+    };
+
+
+    function appendNumber(num) {
+        if(num === '.' && currentInput.includes('.')) return display.textContent = 'NaN';
+
+        else {
+            currentInput += num ;
+        }
+
+    };
+
+    function setOperation(op) {         
+        if(currentInput === '') return;
+        if(previousInput !== '') {          // If we give only one number then it wont work
+            calculateResult();
+        }
+
+        operation = op ;
+        previousInput = currentInput ;
+        currentInput = '' ;
 
     }
-    updateDisplay();
+
+    function calculateResult() {
+        let result;
+        let prev = parseFloat((previousInput));
+        let current = parseFloat((currentInput)) ;
+        if(isNaN(prev) || isNaN(current)) return;
+
+        switch(operation) {
+            case '/' :
+                result = prev / current ;
+                break;
+            case '*' :
+                result = prev * current ;
+                break;
+            case '-' :
+                result = prev - current ;
+                break;
+            case '+' :
+                result = prev + current ;
+                break;
+            case '%' :
+                result = (prev*current) / 100 ;
+                break;
+            default : return ;
+        }
+        currentInput = result.toString();
+        operation = null;
+        previousInput = '';
+        
+    };
+
 });
-
-function updateDisplay() {
-    display.textContent = currentInput;
-};
-
-
-function clearDisplay() {
-    currentInput = '' ;
-    previousInput = '' ;
-    operation = null ;
-};
-
-function toggleSign() {
-    if(currentInput) {
-        currentInput = parseFloat((currentInput) * (-1)).toString();
-    }
-};
-
-function convertToPercentage() {
-    if(currentInput) {
-        currentInput = parseFloat((currentInput) / 100).toString();
-    }
-};
-
-function appendNumber(num) {
-    if(num === '.' && currentInput.includes('.')) return display.textContent = 'NaN';
-
-    else {
-        currentInput += num ;
-    }
-
-};
-
-
-
-
-
